@@ -3,480 +3,380 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; font-src https://fonts.gstatic.com; connect-src https://api.groq.com https://generativelanguage.googleapis.com https://openrouter.ai;">
 <title>AI Money Dungeon</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Share Tech Mono',monospace}
-
-/* STARFIELD */
 #bg{position:fixed;inset:0;z-index:0}
-
-/* SETUP SCREEN */
-#setup{position:fixed;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;background:#00000099}
-.setup-box{background:#050a15;border:1px solid #00ffff44;border-radius:12px;padding:28px 24px;width:min(90vw,400px);box-shadow:0 0 40px #00ffff22}
-.setup-title{font-family:'Orbitron',monospace;font-size:13px;font-weight:900;color:#00ffff;letter-spacing:3px;text-align:center;margin-bottom:6px;text-shadow:0 0 15px #00ffff}
-.setup-sub{font-size:9px;color:#ffffff66;text-align:center;margin-bottom:20px;letter-spacing:1px}
-.key-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.key-row label{font-size:9px;color:#aabbcc;min-width:90px;letter-spacing:1px}
-.key-row input{flex:1;font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 9px;border:1px solid #ffffff22;border-radius:5px;background:#0a1225;color:#cce;outline:none;transition:border .2s}
-.key-row input:focus{border-color:#00ffff66}
-.setup-note{font-size:8px;color:#ffffff44;margin:12px 0 16px;line-height:1.6;border-top:1px solid #ffffff11;padding-top:12px}
-.enter-btn{width:100%;font-family:'Orbitron',monospace;font-size:10px;font-weight:700;letter-spacing:3px;padding:10px;border:1px solid #00ffff;border-radius:6px;background:transparent;color:#00ffff;cursor:pointer;text-shadow:0 0 10px #00ffff;transition:background .2s}
-.enter-btn:hover{background:#00ffff15}
-.key-err{font-size:8px;color:#ff4444;text-align:center;margin-top:8px;min-height:14px}
-
-/* MAIN APP */
-#app{position:fixed;inset:0;z-index:5;display:none;flex-direction:column;align-items:center;justify-content:center}
-.app-title{font-family:'Orbitron',monospace;font-size:clamp(9px,2vw,14px);font-weight:900;color:#fff;letter-spacing:4px;text-shadow:0 0 20px #00ffff,0 0 40px #00ffff66;margin-bottom:4px}
-.app-sub{font-size:clamp(7px,1.5vw,10px);color:#ffffff66;letter-spacing:2px;margin-bottom:14px}
-
-.dungeon-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;width:min(95vw,680px)}
-.cell{position:relative;aspect-ratio:1;border-radius:7px;overflow:hidden;cursor:pointer;transition:transform .2s,box-shadow .2s}
-.cell:hover:not(.player){transform:scale(1.05);z-index:10}
+#setup{position:fixed;inset:0;z-index:10;display:flex;align-items:center;justify-content:center}
+.setup-box{background:#05080f;border:1px solid #00ffff55;border-radius:14px;padding:28px 24px;width:min(92vw,420px);box-shadow:0 0 60px #00ffff11}
+.setup-title{font-family:'Orbitron',monospace;font-size:12px;font-weight:900;color:#00ffff;letter-spacing:4px;text-align:center;margin-bottom:4px;text-shadow:0 0 20px #00ffff}
+.setup-sub{font-size:8px;color:#ffffff55;text-align:center;margin-bottom:18px;letter-spacing:2px}
+.key-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.key-row label{font-size:8px;color:#aabbcc;min-width:88px;letter-spacing:1px}
+.key-row input{flex:1;font-family:'Share Tech Mono',monospace;font-size:8px;padding:6px 8px;border:1px solid #ffffff18;border-radius:5px;background:#0a1020;color:#cce;outline:none;transition:border .2s}
+.key-row input:focus{border-color:#00ffff55}
+.note{font-size:7px;color:#ffffff33;margin:10px 0 14px;line-height:1.7;border-top:1px solid #ffffff0f;padding-top:10px}
+.enter-btn{width:100%;font-family:'Orbitron',monospace;font-size:10px;font-weight:700;letter-spacing:3px;padding:10px;border:1px solid #00ffff;border-radius:7px;background:transparent;color:#00ffff;cursor:pointer;text-shadow:0 0 10px #00ffff;transition:background .2s}
+.enter-btn:hover{background:#00ffff12}
+.key-err{font-size:8px;color:#ff5555;text-align:center;margin-top:8px;min-height:14px}
+#app{position:fixed;inset:0;z-index:5;display:none;flex-direction:column;align-items:center;justify-content:center;gap:0}
+.app-title{font-family:'Orbitron',monospace;font-size:clamp(9px,1.8vw,13px);font-weight:900;color:#fff;letter-spacing:5px;text-shadow:0 0 20px #00ffff,0 0 50px #00ffff44;margin-bottom:3px}
+.app-sub{font-size:clamp(6px,1.2vw,9px);color:#ffffff44;letter-spacing:2px;margin-bottom:10px}
+.dungeon-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;width:min(96vw,700px)}
+.cell{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;cursor:pointer;transition:transform .15s}
+.cell:hover:not(.player){transform:scale(1.06);z-index:10}
 .cell canvas{position:absolute;inset:0;width:100%;height:100%}
-.cell-overlay{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:6px;pointer-events:none}
-.cell-name{font-family:'Orbitron',monospace;font-size:clamp(6px,1.2vw,8px);font-weight:700;letter-spacing:1px;text-shadow:0 0 8px currentColor;line-height:1.3}
-.cell-model{font-size:clamp(5px,1vw,7px);opacity:.65;letter-spacing:.5px}
-.cell-status{position:absolute;top:5px;right:5px;width:6px;height:6px;border-radius:50%;background:#333}
-.cell-status.loading{background:#ffaa00;box-shadow:0 0 6px #ffaa00;animation:pulse .6s infinite}
-.cell-status.done{background:#00ff88;box-shadow:0 0 6px #00ff88}
-
-.controls{display:flex;gap:8px;align-items:center;margin-top:12px;width:min(95vw,680px)}
-.topic-input{flex:1;font-family:'Share Tech Mono',monospace;font-size:10px;padding:8px 12px;border:1px solid #ffffff22;border-radius:6px;background:#050a1599;color:#cce;outline:none;transition:border .2s}
-.topic-input:focus{border-color:#00ffff55}
-.run-btn{font-family:'Orbitron',monospace;font-size:9px;font-weight:700;letter-spacing:2px;padding:8px 16px;border:1px solid #00ffff;border-radius:6px;background:transparent;color:#00ffff;cursor:pointer;text-shadow:0 0 8px #00ffff;white-space:nowrap;transition:background .2s}
-.run-btn:hover{background:#00ffff15}
-.run-btn:disabled{opacity:.4;cursor:not-allowed}
-
-/* MODAL */
-#modal{position:fixed;inset:0;z-index:20;background:#00000088;display:none;align-items:center;justify-content:center}
-.modal-box{background:#050a15;border-radius:10px;padding:18px;width:min(90vw,420px);max-height:80vh;overflow-y:auto}
-.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.cell-label{position:absolute;bottom:0;left:0;right:0;padding:4px 5px 5px;background:linear-gradient(transparent,#00000099)}
+.cell-name{font-family:'Orbitron',monospace;font-size:clamp(5px,1vw,7px);font-weight:700;letter-spacing:1px;line-height:1.2}
+.cell-model-tag{font-size:clamp(4px,.9vw,6px);opacity:.6;letter-spacing:.3px}
+.cell-dot{position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:#222;transition:background .3s}
+.cell-dot.loading{background:#ffaa00;box-shadow:0 0 8px #ffaa00;animation:blink .5s infinite}
+.cell-dot.done{background:#00ff88;box-shadow:0 0 8px #00ff88}
+.cell-dot.error{background:#ff4444}
+.controls{display:flex;gap:8px;align-items:center;margin-top:10px;width:min(96vw,700px)}
+.topic-input{flex:1;font-family:'Share Tech Mono',monospace;font-size:9px;padding:8px 11px;border:1px solid #ffffff18;border-radius:7px;background:#05080f99;color:#cce;outline:none;transition:border .2s}
+.topic-input:focus{border-color:#00ffff44}
+.run-btn{font-family:'Orbitron',monospace;font-size:8px;font-weight:700;letter-spacing:2px;padding:8px 14px;border:1px solid #00ffff;border-radius:7px;background:transparent;color:#00ffff;cursor:pointer;white-space:nowrap;transition:background .2s}
+.run-btn:hover{background:#00ffff12}
+.run-btn:disabled{opacity:.35;cursor:not-allowed}
+.status-bar{font-size:7px;color:#ffffff28;margin-top:6px;letter-spacing:1px;text-align:center;height:12px}
+#modal{position:fixed;inset:0;z-index:20;background:#00000099;display:none;align-items:center;justify-content:center}
+.modal-box{background:#05080f;border-radius:12px;padding:18px;width:min(92vw,460px);max-height:82vh;overflow-y:auto;border:1px solid #ffffff22}
+.modal-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:3px}
 .modal-title{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;letter-spacing:2px}
-.modal-close{background:none;border:none;color:#ffffff66;font-size:16px;cursor:pointer;padding:0 4px;line-height:1}
+.modal-close{background:none;border:none;color:#ffffff44;font-size:18px;cursor:pointer;line-height:1;padding:0 2px;margin-left:8px;flex-shrink:0}
 .modal-close:hover{color:#fff}
-.modal-model{font-size:8px;color:#ffffff44;margin-bottom:12px;letter-spacing:1px}
-.modal-topic{width:100%;font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 9px;border:1px solid #ffffff22;border-radius:5px;background:#0a1225;color:#cce;outline:none;margin-bottom:10px}
-.modal-output{font-size:10px;color:#cce;line-height:1.8;white-space:pre-wrap;min-height:80px;border-top:1px solid #ffffff11;padding-top:10px;word-break:break-word}
-.modal-run{font-family:'Orbitron',monospace;font-size:9px;font-weight:700;letter-spacing:2px;padding:7px 14px;border-radius:5px;background:transparent;cursor:pointer;margin-top:12px;transition:background .2s}
-.modal-run:disabled{opacity:.4;cursor:not-allowed}
-
-.status-bar{font-size:8px;color:#ffffff33;margin-top:8px;letter-spacing:1px;text-align:center}
-
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.modal-info{font-size:7px;color:#ffffff33;margin-bottom:12px;letter-spacing:1px}
+.modal-topic{width:100%;font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 9px;border:1px solid #ffffff18;border-radius:5px;background:#0a1020;color:#cce;outline:none;margin-bottom:8px}
+.modal-run{font-family:'Orbitron',monospace;font-size:8px;font-weight:700;letter-spacing:2px;padding:7px 14px;border-radius:5px;background:transparent;cursor:pointer;transition:background .2s}
+.modal-run:disabled{opacity:.35;cursor:not-allowed}
+.modal-output{font-size:9px;color:#cce;line-height:1.85;white-space:pre-wrap;min-height:80px;border-top:1px solid #ffffff0f;padding-top:10px;margin-top:10px;word-break:break-word}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
 </style>
 </head>
 <body>
-
 <canvas id="bg"></canvas>
 
-<!-- SETUP -->
 <div id="setup">
   <div class="setup-box">
     <div class="setup-title">⚔ AI DUNGEON ⚔</div>
-    <div class="setup-sub">INTRODUZ AS TUAS API KEYS PARA ENTRAR</div>
-    <div class="key-row"><label>GROQ</label><input type="password" id="kGroq" placeholder="gsk_..." autocomplete="off" spellcheck="false"/></div>
-    <div class="key-row"><label>GOOGLE AI</label><input type="password" id="kGoogle" placeholder="AIza..." autocomplete="off" spellcheck="false"/></div>
-    <div class="key-row"><label>OPENROUTER</label><input type="password" id="kOR" placeholder="sk-or-..." autocomplete="off" spellcheck="false"/></div>
-    <div class="setup-note">
-      🔒 As tuas keys <strong>nunca são enviadas</strong> para nenhum servidor externo além das APIs oficiais de cada modelo.<br/>
-      Ficam apenas na memória do browser durante esta sessão e são apagadas quando fechas a página.
-    </div>
-    <button class="enter-btn" onclick="enterDungeon()">ENTRAR NO DUNGEON →</button>
+    <div class="setup-sub">MONEY PROTOCOL · INTRODUZ AS TUAS API KEYS</div>
+    <div class="key-row"><label>GROQ</label><input type="password" id="kGroq" placeholder="gsk_..." autocomplete="off"/></div>
+    <div class="key-row"><label>GOOGLE AI</label><input type="password" id="kGoogle" placeholder="AIza..." autocomplete="off"/></div>
+    <div class="key-row"><label>OPENROUTER</label><input type="password" id="kOR" placeholder="sk-or-..." autocomplete="off"/></div>
+    <div class="key-row"><label>TOGETHER AI</label><input type="password" id="kTogether" placeholder="tgp_..." autocomplete="off"/></div>
+    <div class="key-row"><label>COHERE</label><input type="password" id="kCohere" placeholder="vJN..." autocomplete="off"/></div>
+    <div class="note">🔒 Keys nunca saem do teu browser exceto para as APIs oficiais. Apagadas ao fechar a página.</div>
+    <button class="enter-btn" onclick="enterDungeon()">▶ ENTRAR NO DUNGEON</button>
     <div class="key-err" id="keyErr"></div>
   </div>
 </div>
 
-<!-- APP -->
 <div id="app">
   <div class="app-title">⚔ AI MONEY DUNGEON ⚔</div>
-  <div class="app-sub">12 AGENTS · MONEY PROTOCOL · CLICA NUMA CÉLULA</div>
+  <div class="app-sub">12 AGENTS · CLICA NUMA CÉLULA · EXECUÇÃO REAL</div>
   <div class="dungeon-grid" id="grid"></div>
   <div class="controls">
-    <input class="topic-input" id="topicGlobal" placeholder="nicho (ex: fitness, crypto, dropshipping...)" maxlength="100"/>
+    <input class="topic-input" id="topicGlobal" placeholder="o que queres fazer? (ex: criar loja Etsy de prints, vender no Instagram...)" maxlength="120"/>
     <button class="run-btn" id="runAllBtn" onclick="runAll()">▶ RUN ALL</button>
   </div>
-  <div class="status-bar" id="statusBar">pronto · escreve um nicho e clica RUN ALL</div>
+  <div class="status-bar" id="statusBar">pronto · escreve o teu objetivo e clica RUN ALL</div>
 </div>
 
-<!-- MODAL -->
 <div id="modal" onclick="handleModalBg(event)">
   <div class="modal-box" id="modalBox">
     <div class="modal-head">
       <div class="modal-title" id="mTitle"></div>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
-    <div class="modal-model" id="mModel"></div>
-    <input class="modal-topic" id="mTopic" placeholder="tema específico para este agente..." maxlength="100"/>
-    <button class="modal-run" id="mRunBtn" onclick="runModal()">▶ EXECUTAR AGENTE</button>
-    <div class="modal-output" id="mOutput">Clica EXECUTAR AGENTE para ativar.</div>
+    <div class="modal-info" id="mInfo"></div>
+    <input class="modal-topic" id="mTopic" placeholder="objetivo específico para este agente..." maxlength="120"/>
+    <button class="modal-run" id="mRunBtn" onclick="runModal()">▶ EXECUTAR</button>
+    <div class="modal-output" id="mOutput">Clica EXECUTAR para ativar este agente.</div>
   </div>
 </div>
 
 <script>
-// ── AGENTS ────────────────────────────────────────────────────────────────────
-const AGENTS = [
-  {id:0,  name:'TREND HUNTER',    short:'llama-3.3-70b',  provider:'groq',       model:'llama-3.3-70b-versatile',          color:'#00ffff', bg:'#001a2e', task:'Identifica as 5 tendências mais virais neste nicho agora. Responde em português, direto e prático.'},
-  {id:1,  name:'IDEA GENERATOR',  short:'gemini-2-flash', provider:'google',     model:'gemini-2.0-flash',                 color:'#ff6600', bg:'#1a0800', task:'Gera 5 ideias de negócio online com investimento zero neste nicho. Responde em português.'},
-  {id:2,  name:'COPYWRITER',      short:'mixtral-8x7b',   provider:'groq',       model:'mixtral-8x7b-32768',               color:'#00ff88', bg:'#001a0e', task:'Escreve 3 anúncios curtos e persuasivos para vender neste nicho. Responde em português.'},
-  {id:3,  name:'TIKTOK STRAT',    short:'llama-3.1-8b',   provider:'groq',       model:'llama-3.1-8b-instant',             color:'#ff00cc', bg:'#1a0015', task:'Dá 5 ideias de vídeos TikTok virais para monetizar neste nicho. Responde em português.'},
-  {id:4,  name:'COLD DM',         short:'gemma2-9b',      provider:'groq',       model:'gemma2-9b-it',                     color:'#ffff00', bg:'#1a1a00', task:'Escreve um cold DM de Instagram curto e eficaz para vender neste nicho. Responde em português.'},
-  {id:5,  name:'COMPETITOR SPY',  short:'llama-3.3-70b',  provider:'groq',       model:'llama-3.3-70b-versatile',          color:'#ff4444', bg:'#1a0000', task:'Descreve como os top 3 concorrentes ganham dinheiro neste nicho. Responde em português.'},
-  {id:6,  name:'YOU',             short:'PLAYER',         provider:'none',       model:'',                                 color:'#ffffff', bg:'#080820', isPlayer:true, task:''},
-  {id:7,  name:'NICHE ANALYST',   short:'gemini-2-flash', provider:'google',     model:'gemini-2.0-flash',                 color:'#aa44ff', bg:'#0f001a', task:'Analisa o potencial de lucro deste nicho: tamanho, concorrência, dificuldade. Responde em português.'},
-  {id:8,  name:'PRODUCT FINDER',  short:'llama-4-scout',  provider:'openrouter', model:'meta-llama/llama-4-scout',         color:'#44ffff', bg:'#001515', task:'Sugere 5 produtos físicos ou digitais para vender com alta margem neste nicho. Responde em português.'},
-  {id:9,  name:'AFFILIATE HUNT',  short:'llama-4-maverick',provider:'openrouter',model:'meta-llama/llama-4-maverick',      color:'#ffaa00', bg:'#1a0a00', task:'Lista 5 programas de afiliados com comissões altas neste nicho. Responde em português.'},
-  {id:10, name:'BRAND NAMER',     short:'qwen2.5-72b',    provider:'openrouter', model:'Qwen/Qwen2.5-72B-Instruct',        color:'#00ff44', bg:'#001a08', task:'Gera 5 nomes de marca criativos e memoráveis para este nicho. Responde em português.'},
-  {id:11, name:'MONEY BOSS',      short:'gemini-2-flash', provider:'google',     model:'gemini-2.0-flash',                 color:'#ffdd00', bg:'#1a1000', task:'Cria um plano de monetização completo para ganhar dinheiro neste nicho em 30 dias. Responde em português.'},
+const AGENTS=[
+  {id:0,name:'TREND HUNTER',short:'llama-3.3-70b',provider:'groq',model:'llama-3.3-70b-versatile',color:'#00ffff',env:'cyber',task:`Pesquisa e identifica as 5 tendências mais virais e lucrativas neste nicho AGORA.\nPara cada tendência:\n- Nome da tendência\n- Porque está a crescer\n- Como monetizar JÁ (ação concreta)\n- Plataforma principal\nSê específico e prático. Responde em português.`},
+  {id:1,name:'ETSY LAUNCHER',short:'gemini-2-flash',provider:'google',model:'gemini-2.0-flash',color:'#ff9944',env:'fire',task:`Para este objetivo, cria TUDO para lançar uma loja Etsy:\n1. Nome da loja (5 opções)\n2. Bio da loja (pronta a copiar)\n3. 5 produtos digitais para vender (com preço em €)\n4. Título do 1º produto (SEO otimizado)\n5. Descrição completa do 1º produto (pronta a copiar)\n6. 10 tags Etsy para o 1º produto\nTudo pronto a copiar e usar. Responde em português.`},
+  {id:2,name:'COPYWRITER',short:'mixtral-8x7b',provider:'groq',model:'mixtral-8x7b-32768',color:'#00ff88',env:'forest',task:`Escreve copy de vendas PRONTO A USAR para este nicho:\n1. Hook TikTok/Reels (primeiros 3 segundos)\n2. Caption Instagram (emojis + CTA + hashtags)\n3. Anúncio Facebook (título + texto + CTA)\n4. Email de vendas (assunto + corpo)\n5. Bio Instagram otimizada\nTudo pronto a copiar e colar. Responde em português.`},
+  {id:3,name:'TIKTOK ENGINE',short:'llama-3.1-8b',provider:'groq',model:'llama-3.1-8b-instant',color:'#ff44cc',env:'neon',task:`Cria plano TikTok COMPLETO para este nicho:\n1. 5 hooks de vídeo virais\n2. Script completo do vídeo mais viral (30-60s)\n3. Calendário de 7 dias de conteúdo\n4. 15 hashtags otimizadas\n5. Melhor hora para publicar em Portugal\n6. Como converter views em dinheiro\nPronto a executar hoje. Responde em português.`},
+  {id:4,name:'COLD OUTREACH',short:'gemma2-9b',provider:'groq',model:'gemma2-9b-it',color:'#ffff44',env:'desert',task:`Cria mensagens de outreach PRONTAS A ENVIAR para este nicho:\n1. Cold DM Instagram curto (<150 chars)\n2. Cold DM Instagram completo\n3. Email frio (assunto + corpo)\n4. Follow-up (para quem não respondeu)\n5. Resposta a "quanto custa?" que fecha a venda\nTudo pronto a copiar e enviar. Responde em português.`},
+  {id:5,name:'COMPETITOR SPY',short:'llama-3.3-70b',provider:'groq',model:'llama-3.3-70b-versatile',color:'#ff4444',env:'lava',task:`Análise competitiva ACIONÁVEL para este nicho:\n1. Como os top players ganham dinheiro\n2. O que fazem nas redes que resulta\n3. Preços e ofertas principais deles\n4. As suas fraquezas (oportunidades para ti)\n5. Como diferenciares-te\n6. A tua vantagem competitiva sugerida\nConcreto e prático. Responde em português.`},
+  {id:6,name:'YOU',short:'PLAYER',provider:'none',model:'',color:'#ffffff',env:'player',isPlayer:true,task:''},
+  {id:7,name:'PRODUCT CREATOR',short:'gemini-2-flash',provider:'google',model:'gemini-2.0-flash',color:'#cc44ff',env:'crystal',task:`Cria produtos digitais COMPLETOS e prontos a vender neste nicho:\n1. Ebook: título + índice + introdução pronta\n2. Template/Checklist: nome + lista completa\n3. Mini-curso: nome + 5 módulos + descrição de cada\n4. Pack Canva: descrição + o que inclui\n5. Preços sugeridos para cada produto\n6. Onde vender cada um\nPronto a criar e vender. Responde em português.`},
+  {id:8,name:'INSTAGRAM AGENT',short:'llama-4-scout',provider:'openrouter',model:'meta-llama/llama-4-scout',color:'#44ddff',env:'ocean',task:`Estratégia Instagram COMPLETA para este nicho:\n1. Bio otimizada (pronta a copiar)\n2. 10 ideias de posts com caption pronto\n3. 3 ideias de Stories para vender\n4. Script de Reels viral (30s)\n5. Como crescer de 0 a 1000 seguidores\n6. Como converter seguidores em clientes\nExecutável hoje. Responde em português.`},
+  {id:9,name:'AFFILIATE HUNTER',short:'llama-4-maverick',provider:'openrouter',model:'meta-llama/llama-4-maverick',color:'#ffaa00',env:'gold',task:`Plano de afiliados PRONTO A EXECUTAR neste nicho:\n1. Top 5 programas com comissões mais altas\n2. Como promover cada um (estratégia concreta)\n3. Estimativa de ganhos realista por mês\n4. Conteúdo pronto a publicar para promover\n5. Como escalar para €500/mês com afiliados\nComeça hoje. Responde em português.`},
+  {id:10,name:'BRAND BUILDER',short:'qwen2.5-72b',provider:'openrouter',model:'Qwen/Qwen2.5-72B-Instruct',color:'#44ff88',env:'nature',task:`Constrói uma marca COMPLETA para este nicho:\n1. Nome da marca (5 opções criativas)\n2. Slogan (3 opções)\n3. Proposta de valor única (1 frase)\n4. Tom de voz da marca\n5. Cores sugeridas e porquê\n6. Username para todas as redes\n7. Primeira campanha de lançamento (passo a passo)\nPronto a lançar. Responde em português.`},
+  {id:11,name:'MONEY BOSS',short:'gemini-2-flash',provider:'google',model:'gemini-2.0-flash',color:'#ffee00',env:'boss',task:`Plano de monetização COMPLETO de 30 dias para este nicho:\nSEMANA 1 (dias 1-7): Setup - ações exatas por dia\nSEMANA 2 (dias 8-14): Primeiras vendas - ações exatas\nSEMANA 3 (dias 15-21): Escalar - ações exatas\nSEMANA 4 (dias 22-30): Automatizar - ações exatas\nMeta realista de receita ao fim de 30 dias: €___\nFerramentas necessárias (grátis ou baratas)\nUltra-específico. Responde em português.`},
 ];
 
-// ── STATE ─────────────────────────────────────────────────────────────────────
-const state = {
-  keys: { groq: '', google: '', openrouter: '' },
-  outputs: {},       // id -> { status: 'idle'|'loading'|'done'|'error', text: '' }
-  activeModal: null,
-  running: false,
-  rateLimits: {},    // id -> last call timestamp
+const ENVS={
+  cyber:{bg:'#001428',grid:'#00ffff22',accent:'#00ffff',particle:'#00ffff'},
+  fire:{bg:'#1a0500',grid:'#ff440022',accent:'#ff6600',particle:'#ff8800'},
+  forest:{bg:'#001a08',grid:'#00ff4422',accent:'#00ff88',particle:'#44ff88'},
+  neon:{bg:'#1a0015',grid:'#ff00cc22',accent:'#ff44cc',particle:'#ff88dd'},
+  desert:{bg:'#1a1200',grid:'#ffff0022',accent:'#ffdd44',particle:'#ffee88'},
+  lava:{bg:'#1a0000',grid:'#ff000022',accent:'#ff4444',particle:'#ff8866'},
+  player:{bg:'#08082a',grid:'#ffffff11',accent:'#ffffff',particle:'#aaaaff'},
+  crystal:{bg:'#0f0020',grid:'#cc44ff22',accent:'#cc44ff',particle:'#dd88ff'},
+  ocean:{bg:'#001a22',grid:'#44ddff22',accent:'#44ddff',particle:'#88eeff'},
+  gold:{bg:'#1a0e00',grid:'#ffaa0022',accent:'#ffaa00',particle:'#ffcc44'},
+  nature:{bg:'#041a0a',grid:'#44ff8822',accent:'#44ff88',particle:'#88ffaa'},
+  boss:{bg:'#1a1400',grid:'#ffee0022',accent:'#ffee00',particle:'#ffff88'},
 };
 
-const RATE_LIMIT_MS = 3000; // min 3s between calls per agent
+const SPRITES=['🤖','🔥','🦊','👾','🧙','💀','🧑','🔮','🌊','💰','🌿','👑'];
 
-// ── SECURITY HELPERS ──────────────────────────────────────────────────────────
-function sanitizeText(str) {
-  return String(str)
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;')
-    .replace(/'/g,'&#x27;');
-}
+const S={keys:{groq:'',google:'',openrouter:'',together:'',cohere:''},outputs:{},activeModal:null,running:false,rateLimits:{},sprites:{},particles:{},t:0};
 
-function validateKey(key, prefix) {
-  if (!key || typeof key !== 'string') return false;
-  if (key.length < 10 || key.length > 300) return false;
-  if (prefix && !key.startsWith(prefix)) return false;
-  return /^[a-zA-Z0-9_\-\.]+$/.test(key);
-}
+function sanitize(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function validateKey(k,pre){if(!k||k.length<8||k.length>300)return false;if(pre&&!k.startsWith(pre))return false;return /^[a-zA-Z0-9_\-\.]+$/.test(k);}
+function cleanTopic(t){return String(t).replace(/[<>&"'\\]/g,'').slice(0,120).trim();}
 
-function sanitizeTopic(topic) {
-  return String(topic).replace(/[<>&"']/g,'').slice(0, 100).trim();
-}
-
-// ── STARFIELD ─────────────────────────────────────────────────────────────────
-(function initBg() {
-  const cv = document.getElementById('bg');
-  const ctx = cv.getContext('2d');
-  let W, H, stars = [], t = 0;
-  function resize() { W = cv.width = window.innerWidth; H = cv.height = window.innerHeight; }
-  window.addEventListener('resize', resize); resize();
-  for (let i = 0; i < 220; i++) stars.push({ x: Math.random()*2000, y: Math.random()*2000, s: Math.random()*1.4+.3, sp: Math.random()*.25+.04 });
-  function draw() {
-    ctx.fillStyle = '#020408'; ctx.fillRect(0,0,W,H);
-    [[W*.2,H*.3,'#00224422'],[W*.75,H*.6,'#1a002a22'],[W*.5,H*.15,'#00152222']].forEach(([gx,gy,c])=>{
-      const gr = ctx.createRadialGradient(gx,gy,0,gx,gy,W*.38);
-      gr.addColorStop(0,c); gr.addColorStop(1,'transparent');
-      ctx.fillStyle=gr; ctx.fillRect(0,0,W,H);
+// STARFIELD
+(function(){
+  const cv=document.getElementById('bg'),ctx=cv.getContext('2d');
+  let W,H,stars=[],t=0;
+  function resize(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;}
+  window.addEventListener('resize',resize);resize();
+  for(let i=0;i<250;i++)stars.push({x:Math.random()*3000,y:Math.random()*2000,s:Math.random()*1.5+.2,sp:Math.random()*.2+.03});
+  function draw(){
+    ctx.fillStyle='#010306';ctx.fillRect(0,0,W,H);
+    [[W*.15,H*.25,'#00223311'],[W*.8,H*.65,'#1a002811'],[W*.5,H*.1,'#00141811']].forEach(([gx,gy,c])=>{
+      const gr=ctx.createRadialGradient(gx,gy,0,gx,gy,W*.45);gr.addColorStop(0,c);gr.addColorStop(1,'transparent');ctx.fillStyle=gr;ctx.fillRect(0,0,W,H);
     });
-    stars.forEach(s => {
-      s.x -= s.sp; if (s.x < 0) s.x = W + 4;
-      ctx.beginPath(); ctx.arc(s.x, s.y % H, s.s, 0, Math.PI*2);
-      ctx.fillStyle = `rgba(200,220,255,${.25+Math.sin(t*.018+s.y)*.18})`; ctx.fill();
-    });
-    t++; requestAnimationFrame(draw);
+    stars.forEach(s=>{s.x-=s.sp;if(s.x<0)s.x=W+3;ctx.beginPath();ctx.arc(s.x,s.y%H,s.s,0,Math.PI*2);ctx.fillStyle=`rgba(180,210,255,${.2+Math.sin(t*.015+s.y)*.15})`;ctx.fill();});
+    t++;requestAnimationFrame(draw);
   }
   draw();
 })();
 
-// ── SETUP ─────────────────────────────────────────────────────────────────────
-function enterDungeon() {
-  const groq   = document.getElementById('kGroq').value.trim();
-  const google = document.getElementById('kGoogle').value.trim();
-  const or_    = document.getElementById('kOR').value.trim();
-  const errEl  = document.getElementById('keyErr');
-
-  if (!groq && !google && !or_) { errEl.textContent = 'Introduz pelo menos uma API key.'; return; }
-  if (groq   && !validateKey(groq,   'gsk_'))    { errEl.textContent = 'Groq key inválida (deve começar com gsk_).'; return; }
-  if (google && !validateKey(google, 'AIza'))     { errEl.textContent = 'Google key inválida (deve começar com AIza).'; return; }
-  if (or_    && !validateKey(or_,    'sk-or-'))   { errEl.textContent = 'OpenRouter key inválida (deve começar com sk-or-).'; return; }
-
-  state.keys.groq = groq;
-  state.keys.google = google;
-  state.keys.openrouter = or_;
-  errEl.textContent = '';
-
-  // clear inputs from DOM immediately
-  ['kGroq','kGoogle','kOR'].forEach(id => { document.getElementById(id).value = ''; });
-
-  document.getElementById('setup').style.display = 'none';
-  document.getElementById('app').style.display = 'flex';
-  buildGrid();
+function enterDungeon(){
+  const g=document.getElementById('kGroq').value.trim();
+  const go=document.getElementById('kGoogle').value.trim();
+  const o=document.getElementById('kOR').value.trim();
+  const to=document.getElementById('kTogether').value.trim();
+  const co=document.getElementById('kCohere').value.trim();
+  const err=document.getElementById('keyErr');
+  if(!g&&!go&&!o&&!to&&!co){err.textContent='Introduz pelo menos uma API key.';return;}
+  if(g&&!validateKey(g,'gsk_')){err.textContent='Groq key inválida.';return;}
+  if(go&&!validateKey(go,'AIza')){err.textContent='Google key inválida.';return;}
+  if(o&&!validateKey(o,'sk-or-')){err.textContent='OpenRouter key inválida.';return;}
+  S.keys.groq=g;S.keys.google=go;S.keys.openrouter=o;S.keys.together=to;S.keys.cohere=co;
+  ['kGroq','kGoogle','kOR','kTogether','kCohere'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('setup').style.display='none';
+  document.getElementById('app').style.display='flex';
+  buildGrid();initSprites();startLoop();
 }
 
-// ── CELL CANVAS ───────────────────────────────────────────────────────────────
-function drawCell(canvas, agent) {
-  const c = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
-  const now = Date.now() * .001;
-  c.clearRect(0,0,W,H);
-  c.fillStyle = agent.bg; c.fillRect(0,0,W,H);
+function rng(seed){let s=seed;return()=>{s=s*1664525+1013904223&0xffffffff;return(s>>>0)/4294967296;};}
 
-  if (agent.isPlayer) { drawPlayer(c,W,H); return; }
-
-  const status = state.outputs[agent.id]?.status || 'idle';
-  const col = agent.color;
-
+function drawCell(cv,a){
+  const ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
+  const e=ENVS[a.env||'cyber'];
+  ctx.fillStyle=e.bg;ctx.fillRect(0,0,W,H);
   // scanlines
-  for (let y = 0; y < H; y += 3) { c.fillStyle = 'rgba(0,0,0,.12)'; c.fillRect(0,y,W,1); }
-
-  // circuit lines
-  c.strokeStyle = col + '33'; c.lineWidth = .5;
-  const rng = mulberry32(agent.id * 99999);
-  for (let i = 0; i < 5; i++) {
-    c.beginPath();
-    c.moveTo(rng()*W, rng()*H);
-    c.lineTo(rng()*W, rng()*H);
-    c.stroke();
+  for(let y=0;y<H;y+=3){ctx.fillStyle='rgba(0,0,0,.1)';ctx.fillRect(0,y,W,1);}
+  // floor grid
+  ctx.strokeStyle=e.grid;ctx.lineWidth=.5;
+  for(let i=0;i<=6;i++){const y=H*.55+i*(H*.45/6);const xo=(i/6)*W*.35;ctx.beginPath();ctx.moveTo(xo,y);ctx.lineTo(W-xo,y);ctx.stroke();}
+  for(let i=0;i<=8;i++){const p=i/8;ctx.beginPath();ctx.moveTo(W/2,H*.55);ctx.lineTo(p*W,H);ctx.stroke();}
+  // back wall lines
+  const r=rng(a.id*777);
+  ctx.strokeStyle=e.accent+'1a';ctx.lineWidth=.4;
+  for(let i=0;i<4;i++){ctx.beginPath();ctx.moveTo(r()*W,0);ctx.lineTo(r()*W,H*.55);ctx.stroke();}
+  // ambient glow
+  const pulse=.7+Math.sin(S.t*.04+a.id)*.22;
+  if(a.isPlayer){
+    const gr=ctx.createRadialGradient(W/2,H*.35,0,W/2,H*.35,W*.3*pulse);
+    gr.addColorStop(0,'#ffffff22');gr.addColorStop(1,'transparent');
+    ctx.fillStyle=gr;ctx.fillRect(0,0,W,H);
+    // player figure
+    const cx=W/2,cy=H*.38;
+    ctx.fillStyle='#ffffffcc';
+    ctx.beginPath();ctx.arc(cx,cy-W*.12,W*.07,0,Math.PI*2);ctx.fill();
+    ctx.fillRect(cx-W*.05,cy-W*.05,W*.10,W*.16);
+    ctx.fillRect(cx-W*.10,cy-W*.04,W*.05,W*.12);
+    ctx.fillRect(cx+W*.05,cy-W*.04,W*.05,W*.12);
+    ctx.fillRect(cx-W*.07,cy+W*.11,W*.05,W*.13);
+    ctx.fillRect(cx+W*.02,cy+W*.11,W*.05,W*.13);
+    ctx.font=`bold ${Math.floor(W*.09)}px Orbitron,monospace`;
+    ctx.fillStyle='#ffffffaa';ctx.textAlign='center';ctx.fillText('YOU',cx,H*.91);
+  } else {
+    const gr=ctx.createRadialGradient(W/2,H*.3,0,W/2,H*.3,W*.35*pulse);
+    gr.addColorStop(0,e.accent+'44');gr.addColorStop(1,'transparent');
+    ctx.fillStyle=gr;ctx.fillRect(0,0,W,H);
+    // orb
+    const cx=W/2,cy=H*.3;
+    ctx.fillStyle=e.accent+'99';ctx.beginPath();ctx.arc(cx,cy,W*.09,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle=e.accent;ctx.beginPath();ctx.arc(cx,cy,W*.045,0,Math.PI*2);ctx.fill();
   }
-
-  // orb pulse
-  const cx = W/2, cy = H*.42;
-  const pulse = status === 'loading' ? .8 + Math.sin(now*4)*-.2 : .85 + Math.sin(now*1.5+agent.id)*.12;
-  const gr = c.createRadialGradient(cx,cy,0,cx,cy,W*.26*pulse);
-  gr.addColorStop(0, col+'bb'); gr.addColorStop(.5, col+'33'); gr.addColorStop(1,'transparent');
-  c.fillStyle = gr; c.beginPath(); c.arc(cx,cy,W*.26*pulse,0,Math.PI*2); c.fill();
-  c.fillStyle = col+'88'; c.beginPath(); c.arc(cx,cy,W*.09,0,Math.PI*2); c.fill();
-  c.fillStyle = col; c.beginPath(); c.arc(cx,cy,W*.045,0,Math.PI*2); c.fill();
-
   // corner brackets
-  c.strokeStyle = col; c.lineWidth = 1.5;
-  const bw = W*.14;
+  ctx.strokeStyle=e.accent+'cc';ctx.lineWidth=1.5;
+  const bw=W*.13;
   [[0,0,1,1],[W,0,-1,1],[0,H,1,-1],[W,H,-1,-1]].forEach(([x,y,dx,dy])=>{
-    c.beginPath(); c.moveTo(x+dx*2,y); c.lineTo(x+dx*2,y+dy*bw); c.stroke();
-    c.beginPath(); c.moveTo(x,y+dy*2); c.lineTo(x+dx*bw,y+dy*2); c.stroke();
+    ctx.beginPath();ctx.moveTo(x+dx*2,y);ctx.lineTo(x+dx*2,y+dy*bw);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x,y+dy*2);ctx.lineTo(x+dx*bw,y+dy*2);ctx.stroke();
   });
-
-  // progress bar
-  if (status === 'loading') {
-    const prog = ((now * 55) % W);
-    c.fillStyle = col+'55'; c.fillRect(0,H*.9,prog,H*.05);
-  } else if (status === 'done') {
-    c.fillStyle = col+'44'; c.fillRect(0,H*.9,W,H*.05);
+  // status bar
+  const status=S.outputs[a.id]?.status||'idle';
+  if(status==='loading'){const p=((S.t*2)%W);ctx.fillStyle=e.accent+'66';ctx.fillRect(0,H*.93,p,H*.04);ctx.fillStyle=e.accent+'22';ctx.fillRect(p,H*.93,W-p,H*.04);}
+  else if(status==='done'){ctx.fillStyle=e.accent+'55';ctx.fillRect(0,H*.93,W,H*.04);}
+  // particles
+  if(!S.particles[a.id])S.particles[a.id]=[];
+  const pts=S.particles[a.id];
+  if(pts.length<10&&Math.random()<.12)pts.push({x:Math.random()*W,y:H*.55+Math.random()*H*.4,vx:(Math.random()-.5)*.7,vy:-Math.random()*1.1-.2,life:0,max:40+Math.random()*25});
+  for(let i=pts.length-1;i>=0;i--){
+    const p=pts[i];p.x+=p.vx;p.y+=p.vy;p.life++;
+    const al=(1-p.life/p.max)*.55;
+    ctx.fillStyle=e.particle+Math.round(al*255).toString(16).padStart(2,'0');
+    ctx.beginPath();ctx.arc(p.x,p.y,1.1,0,Math.PI*2);ctx.fill();
+    if(p.life>=p.max)pts.splice(i,1);
   }
-}
-
-function drawPlayer(c,W,H) {
-  c.fillStyle='#080820'; c.fillRect(0,0,W,H);
-  for(let y=0;y<H;y+=3){c.fillStyle='rgba(0,0,0,.1)';c.fillRect(0,y,W,1);}
-  const cx=W/2, cy=H*.44;
-  const gr=c.createRadialGradient(cx,cy,0,cx,cy,W*.3);
-  gr.addColorStop(0,'#ffffff18'); gr.addColorStop(1,'transparent');
-  c.fillStyle=gr; c.fillRect(0,0,W,H);
-  c.fillStyle='#ffffffcc';
-  c.beginPath(); c.arc(cx,cy-W*.14,W*.075,0,Math.PI*2); c.fill();
-  c.fillRect(cx-W*.055,cy-W*.065,W*.11,W*.17);
-  c.fillRect(cx-W*.115,cy-W*.045,W*.055,W*.13);
-  c.fillRect(cx+W*.06, cy-W*.045,W*.055,W*.13);
-  c.fillRect(cx-W*.075,cy+W*.105,W*.055,W*.14);
-  c.fillRect(cx+W*.02, cy+W*.105,W*.055,W*.14);
-  c.font=`bold ${Math.floor(W*.1)}px Orbitron,monospace`;
-  c.fillStyle='#ffffff'; c.textAlign='center';
-  c.fillText('YOU',cx,H*.93);
-}
-
-// deterministic RNG for stable circuit lines per agent
-function mulberry32(seed) {
-  return function() { seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; };
-}
-
-// ── GRID ──────────────────────────────────────────────────────────────────────
-function buildGrid() {
-  const grid = document.getElementById('grid');
-  grid.innerHTML = '';
-  AGENTS.forEach(a => {
-    const cell = document.createElement('div');
-    cell.className = 'cell' + (a.isPlayer ? ' player' : '');
-    cell.id = 'cell' + a.id;
-    cell.style.boxShadow = `inset 0 0 14px ${a.color}22, 0 0 6px ${a.color}11`;
-
-    const cv = document.createElement('canvas');
-    cv.width = 160; cv.height = 160;
-    cell.appendChild(cv);
-
-    const ov = document.createElement('div');
-    ov.className = 'cell-overlay';
-    ov.innerHTML = `<div class="cell-name" style="color:${sanitizeText(a.color)}">${sanitizeText(a.name)}</div><div class="cell-model" style="color:${sanitizeText(a.color)}88">${sanitizeText(a.short)}</div>`;
-    cell.appendChild(ov);
-
-    if (!a.isPlayer) {
-      const dot = document.createElement('div');
-      dot.className = 'cell-status'; dot.id = 'dot'+a.id;
-      cell.appendChild(dot);
-      cell.addEventListener('click', () => openModal(a.id));
-    }
-
-    grid.appendChild(cell);
-    drawCell(cv, a);
+  // sprites in this cell
+  AGENTS.forEach(ag=>{
+    const sp=S.sprites[ag.id];
+    if(!sp||sp.cell!==a.id)return;
+    ctx.font=`${Math.floor(W*.17)}px serif`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(SPRITES[ag.id],sp.x*W,sp.y*H);
   });
+}
 
-  // animation loop
-  setInterval(() => {
-    AGENTS.forEach(a => {
-      if (a.isPlayer) return;
-      const cv = document.querySelector('#cell'+a.id+' canvas');
-      if (cv) drawCell(cv, a);
+function initSprites(){
+  AGENTS.forEach(a=>{
+    S.sprites[a.id]={cell:a.id,x:.3+Math.random()*.4,y:.62+Math.random()*.2,vx:(Math.random()-.5)*.014,vy:(Math.random()-.5)*.007,timer:0};
+  });
+}
+
+function startLoop(){
+  setInterval(()=>{
+    S.t++;
+    AGENTS.forEach(a=>{
+      const sp=S.sprites[a.id];if(!sp)return;
+      sp.x+=sp.vx;sp.y+=sp.vy;
+      if(sp.x<.08||sp.x>.88){sp.vx*=-1;sp.x=Math.max(.08,Math.min(.88,sp.x));}
+      if(sp.y<.56||sp.y>.88){sp.vy*=-1;sp.y=Math.max(.56,Math.min(.88,sp.y));}
+      sp.timer++;
+      if(sp.timer>70+Math.random()*90){
+        sp.vx=(Math.random()-.5)*.016;sp.vy=(Math.random()-.5)*.008;sp.timer=0;
+        if(Math.random()<.07&&!a.isPlayer){
+          const others=AGENTS.filter(b=>b.id!==a.id);
+          const t2=others[Math.floor(Math.random()*others.length)];
+          sp.cell=t2.id;sp.x=.25+Math.random()*.5;sp.y=.6+Math.random()*.2;
+        }
+      }
     });
-  }, 60);
+    AGENTS.forEach(a=>{const cv=document.querySelector('#cell'+a.id+' canvas');if(cv)drawCell(cv,a);});
+  },50);
 }
 
-function updateDot(id, status) {
-  const dot = document.getElementById('dot'+id);
-  if (!dot) return;
-  dot.className = 'cell-status ' + (status === 'loading' ? 'loading' : status === 'done' ? 'done' : '');
-}
-
-// ── API CALLS ─────────────────────────────────────────────────────────────────
-async function callGroq(model, prompt) {
-  if (!state.keys.groq) throw new Error('Groq key não configurada.');
-  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + state.keys.groq },
-    body: JSON.stringify({ model, messages: [{ role: 'user', content: prompt }], max_tokens: 450, temperature: 0.8 })
+function buildGrid(){
+  const grid=document.getElementById('grid');grid.innerHTML='';
+  AGENTS.forEach(a=>{
+    const cell=document.createElement('div');
+    cell.className='cell'+(a.isPlayer?' player':'');cell.id='cell'+a.id;
+    cell.style.boxShadow=`0 0 8px ${a.color}22,inset 0 0 15px ${a.color}11`;
+    const cv=document.createElement('canvas');cv.width=170;cv.height=170;cell.appendChild(cv);
+    const lbl=document.createElement('div');lbl.className='cell-label';
+    lbl.innerHTML=`<div class="cell-name" style="color:${sanitize(a.color)}">${sanitize(a.name)}</div><div class="cell-model-tag" style="color:${sanitize(a.color)}88">${sanitize(a.short)}</div>`;
+    cell.appendChild(lbl);
+    if(!a.isPlayer){
+      const dot=document.createElement('div');dot.className='cell-dot';dot.id='dot'+a.id;cell.appendChild(dot);
+      cell.addEventListener('click',()=>openModal(a.id));
+    }
+    grid.appendChild(cell);
   });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error?.message || 'Groq error ' + res.status);
-  const text = data?.choices?.[0]?.message?.content;
-  if (typeof text !== 'string') throw new Error('Resposta inválida do Groq.');
-  return text;
 }
 
-async function callGoogle(model, prompt) {
-  if (!state.keys.google) throw new Error('Google key não configurada.');
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(state.keys.google)}`;
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { maxOutputTokens: 450 } })
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error?.message || 'Google error ' + res.status);
-  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (typeof text !== 'string') throw new Error('Resposta inválida do Google.');
-  return text;
+function setDot(id,s){const d=document.getElementById('dot'+id);if(d)d.className='cell-dot '+(s==='loading'?'loading':s==='done'?'done':s==='error'?'error':'');}
+
+async function callGroq(model,prompt){
+  if(!S.keys.groq)throw new Error('Groq key não configurada.');
+  const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.keys.groq},body:JSON.stringify({model,messages:[{role:'user',content:prompt}],max_tokens:600,temperature:.8})});
+  const d=await r.json();if(!r.ok)throw new Error(d.error?.message||'Groq '+r.status);
+  const t=d?.choices?.[0]?.message?.content;if(typeof t!=='string')throw new Error('Resposta inválida.');return t;
+}
+async function callGoogle(model,prompt){
+  if(!S.keys.google)throw new Error('Google key não configurada.');
+  const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(S.keys.google)}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:600}})});
+  const d=await r.json();if(!r.ok)throw new Error(d.error?.message||'Google '+r.status);
+  const t=d?.candidates?.[0]?.content?.parts?.[0]?.text;if(typeof t!=='string')throw new Error('Resposta inválida.');return t;
+}
+async function callOpenRouter(model,prompt){
+  if(!S.keys.openrouter)throw new Error('OpenRouter key não configurada.');
+  const r=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.keys.openrouter},body:JSON.stringify({model,messages:[{role:'user',content:prompt}],max_tokens:600})});
+  const d=await r.json();if(!r.ok)throw new Error(d.error?.message||'OpenRouter '+r.status);
+  const t=d?.choices?.[0]?.message?.content;if(typeof t!=='string')throw new Error('Resposta inválida.');return t;
+}
+async function callTogether(model,prompt){
+  if(!S.keys.together)throw new Error('Together key não configurada.');
+  const r=await fetch('https://api.together.xyz/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.keys.together},body:JSON.stringify({model,messages:[{role:'user',content:prompt}],max_tokens:600})});
+  const d=await r.json();if(!r.ok)throw new Error(d.error?.message||'Together '+r.status);
+  const t=d?.choices?.[0]?.message?.content;if(typeof t!=='string')throw new Error('Resposta inválida.');return t;
 }
 
-async function callOpenRouter(model, prompt) {
-  if (!state.keys.openrouter) throw new Error('OpenRouter key não configurada.');
-  const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + state.keys.openrouter },
-    body: JSON.stringify({ model, messages: [{ role: 'user', content: prompt }], max_tokens: 450 })
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error?.message || 'OpenRouter error ' + res.status);
-  const text = data?.choices?.[0]?.message?.content;
-  if (typeof text !== 'string') throw new Error('Resposta inválida do OpenRouter.');
-  return text;
-}
-
-// ── RUN AGENT ─────────────────────────────────────────────────────────────────
-async function runAgent(id, topic) {
-  const a = AGENTS[id];
-  if (!a || a.isPlayer) return;
-
-  // rate limit
-  const now = Date.now();
-  if (state.rateLimits[id] && (now - state.rateLimits[id]) < RATE_LIMIT_MS) return;
-  state.rateLimits[id] = now;
-
-  const safeTopic = sanitizeTopic(topic || 'negócios online em Portugal');
-  const prompt = `${a.task}\n\nNicho/tema: "${safeTopic}"\n\nMáximo 200 palavras. Responde em português.`;
-
-  state.outputs[id] = { status: 'loading', text: '' };
-  updateDot(id, 'loading');
-
-  try {
-    let result = '';
-    if      (a.provider === 'groq')       result = await callGroq(a.model, prompt);
-    else if (a.provider === 'google')     result = await callGoogle(a.model, prompt);
-    else if (a.provider === 'openrouter') result = await callOpenRouter(a.model, prompt);
-
-    state.outputs[id] = { status: 'done', text: result };
-    updateDot(id, 'done');
-    if (state.activeModal === id) setModalOutput(result);
-  } catch(e) {
-    const msg = 'Erro: ' + (e.message || 'desconhecido');
-    state.outputs[id] = { status: 'error', text: msg };
-    updateDot(id, 'idle');
-    if (state.activeModal === id) setModalOutput(msg);
+async function runAgent(id,topic){
+  const a=AGENTS[id];if(!a||a.isPlayer)return;
+  const now=Date.now();
+  if(S.rateLimits[id]&&(now-S.rateLimits[id])<3000)return;
+  S.rateLimits[id]=now;
+  const safe=cleanTopic(topic||'negócios online em Portugal');
+  const prompt=`OBJETIVO DO UTILIZADOR: "${safe}"\n\n${a.task}\n\nMáximo 350 palavras.`;
+  S.outputs[id]={status:'loading',text:''};setDot(id,'loading');
+  try{
+    let result='';
+    if(a.provider==='groq')result=await callGroq(a.model,prompt);
+    else if(a.provider==='google')result=await callGoogle(a.model,prompt);
+    else if(a.provider==='openrouter')result=await callOpenRouter(a.model,prompt);
+    else if(a.provider==='together')result=await callTogether(a.model,prompt);
+    S.outputs[id]={status:'done',text:result};setDot(id,'done');
+    if(S.activeModal===id)setOut(result);
+  }catch(e){
+    const msg='⚠ Erro: '+(e.message||'desconhecido');
+    S.outputs[id]={status:'error',text:msg};setDot(id,'error');
+    if(S.activeModal===id)setOut(msg);
   }
 }
 
-async function runAll() {
-  if (state.running) return;
-  state.running = true;
-  const btn = document.getElementById('runAllBtn');
-  btn.disabled = true;
-  const topic = document.getElementById('topicGlobal').value.trim();
-  document.getElementById('statusBar').textContent = 'a ativar todos os agentes...';
-  const promises = AGENTS.filter(a => !a.isPlayer).map((a, i) =>
-    new Promise(r => setTimeout(() => runAgent(a.id, topic).then(r).catch(r), i * 280))
-  );
-  await Promise.allSettled(promises);
-  document.getElementById('statusBar').textContent = 'missão completa · clica numa célula para ver os resultados';
-  btn.disabled = false;
-  state.running = false;
+async function runAll(){
+  if(S.running)return;S.running=true;
+  document.getElementById('runAllBtn').disabled=true;
+  const topic=document.getElementById('topicGlobal').value.trim();
+  document.getElementById('statusBar').textContent='a ativar todos os agentes...';
+  await Promise.allSettled(AGENTS.filter(a=>!a.isPlayer).map((a,i)=>new Promise(r=>setTimeout(()=>runAgent(a.id,topic).then(r).catch(r),i*320))));
+  document.getElementById('statusBar').textContent='missão completa · clica numa célula para ver os resultados';
+  document.getElementById('runAllBtn').disabled=false;S.running=false;
 }
 
-// ── MODAL ─────────────────────────────────────────────────────────────────────
-function openModal(id) {
-  const a = AGENTS[id];
-  state.activeModal = id;
-  const box = document.getElementById('modalBox');
-  box.style.border = '1px solid ' + a.color + '66';
-  box.style.boxShadow = '0 0 30px ' + a.color + '33';
-  const title = document.getElementById('mTitle');
-  title.textContent = a.name;
-  title.style.color = a.color;
-  title.style.textShadow = '0 0 10px ' + a.color;
-  document.getElementById('mModel').textContent = a.model + ' · ' + a.provider;
-  document.getElementById('mTopic').value = document.getElementById('topicGlobal').value;
-  const runBtn = document.getElementById('mRunBtn');
-  runBtn.style.border = '1px solid ' + a.color;
-  runBtn.style.color = a.color;
-  runBtn.style.textShadow = '0 0 8px ' + a.color;
-  setModalOutput(state.outputs[id]?.text || 'Clica EXECUTAR AGENTE para ativar.');
-  document.getElementById('modal').style.display = 'flex';
+function openModal(id){
+  const a=AGENTS[id];S.activeModal=id;
+  const box=document.getElementById('modalBox');
+  box.style.borderColor=a.color+'55';box.style.boxShadow=`0 0 40px ${a.color}22`;
+  const title=document.getElementById('mTitle');
+  title.textContent=a.name;title.style.color=a.color;title.style.textShadow=`0 0 12px ${a.color}`;
+  document.getElementById('mInfo').textContent=a.model+' · '+a.provider;
+  document.getElementById('mTopic').value=document.getElementById('topicGlobal').value;
+  const rb=document.getElementById('mRunBtn');
+  rb.style.border=`1px solid ${a.color}`;rb.style.color=a.color;rb.style.textShadow=`0 0 8px ${a.color}`;
+  setOut(S.outputs[id]?.text||'Clica EXECUTAR para ativar este agente.');
+  document.getElementById('modal').style.display='flex';
 }
-
-function setModalOutput(text) {
-  const el = document.getElementById('mOutput');
-  el.textContent = text; // textContent is safe — no HTML injection
+function setOut(t){document.getElementById('mOutput').textContent=t;}
+function closeModal(){document.getElementById('modal').style.display='none';S.activeModal=null;}
+function handleModalBg(e){if(e.target===document.getElementById('modal'))closeModal();}
+async function runModal(){
+  if(S.activeModal===null)return;
+  const btn=document.getElementById('mRunBtn');btn.disabled=true;setOut('a processar...');
+  const topic=document.getElementById('mTopic').value.trim()||document.getElementById('topicGlobal').value.trim();
+  await runAgent(S.activeModal,topic);btn.disabled=false;
 }
-
-function closeModal() {
-  document.getElementById('modal').style.display = 'none';
-  state.activeModal = null;
-}
-
-function handleModalBg(e) {
-  if (e.target === document.getElementById('modal')) closeModal();
-}
-
-async function runModal() {
-  if (state.activeModal === null) return;
-  const btn = document.getElementById('mRunBtn');
-  btn.disabled = true;
-  setModalOutput('a processar...');
-  const topic = document.getElementById('mTopic').value.trim() || document.getElementById('topicGlobal').value.trim();
-  await runAgent(state.activeModal, topic);
-  btn.disabled = false;
-}
-
-// ── KEYBOARD ──────────────────────────────────────────────────────────────────
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 </script>
 </body>
 </html>
